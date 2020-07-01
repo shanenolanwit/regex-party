@@ -149,4 +149,17 @@ describe.only('Unit: RegexBuilder', () => {
     const match = 'hello world'.match(regex);
     assert.strictEqual(match[1], 'world');
   });
+
+  it('should be possible to build a regex that is not case sensitive', () => {
+    const builder = new RegexBuilder();
+    const regex = builder
+      .optional('1')
+      .then('woRLd')
+      .caseSensitive(false)
+      .build();
+    assert('1world'.match(/1WORld/i), 'should have matched');
+    assert.strictEqual(builder.asString(), '1?woRLd');
+    assert('1world'.match(regex), 'should have matched');
+    assert('WOrld'.match(regex), 'should have matched');
+  });
 });

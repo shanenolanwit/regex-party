@@ -5,6 +5,20 @@ module.exports = class RegexBuilder {
   }
 
   /**
+   * If set to true, removes the i flag to make matches case sensitive
+   * If set to false, adds the i flag to make matches case insensitive
+   * @param {*} caseSensitive
+   */
+  caseSensitive(caseSensitive) {
+    if (!caseSensitive && !this.flags.includes('i')) {
+      this.flags.push('i');
+    } else {
+      this.flags = this.flags.filter(f => f !== 'i');
+    }
+    return this;
+  }
+
+  /**
    * Adds a starts with condition to the regex with the given pattern
    *
    * @param {string} pattern pattern
