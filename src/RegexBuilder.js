@@ -119,7 +119,7 @@ module.exports = class RegexBuilder {
    */
   optional(pattern) {
     if (pattern.length > 1) {
-      this.regexStr += `${this.group(pattern)}?`;
+      this.regexStr += `(${pattern})?`;
     } else {
       this.regexStr += `${pattern}?`;
     }
@@ -163,11 +163,10 @@ module.exports = class RegexBuilder {
    * @returns RegExp - the regular expression object
    */
   build() {
-    const regex = this.asString();
     if (this.flags.length > 0) {
-      return new RegExp(regex, this.flags.join(''));
+      return new RegExp(this.regexStr, this.flags.join(''));
     }
-    return new RegExp(regex);
+    return new RegExp(this.regexStr);
   }
 
   /**
