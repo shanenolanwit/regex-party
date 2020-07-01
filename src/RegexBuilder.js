@@ -2,8 +2,6 @@ module.exports = class RegexBuilder {
   constructor({ flags = [] } = {}) {
     this.regexStr = '';
     this.flags = flags;
-    this.startWith = false;
-    this.endWith = false;
   }
 
   /**
