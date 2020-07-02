@@ -162,34 +162,4 @@ describe.only('Unit: RegexBuilder', () => {
     assert('1world'.match(regex), 'should have matched');
     assert('WOrld'.match(regex), 'should have matched');
   });
-
-  it('should be possible to build a regex that matches a number between a number range', () => {
-    const start = 10;
-    const end = 20;
-    const builder = new RegexBuilder();
-    const regex = builder
-      .matchNumberBetween(10, 20)
-      .toRegExp();
-    const numbers = [];
-    for (let i = start + 1; i < end; i += 1) {
-      numbers.push(`${i}`);
-    }
-    assert.strictEqual(builder.toRegexString(), '(11|12|13|14|15|16|17|18|19)');
-    assert(numbers.every(number => number.match(regex)), 'should have matched all numbers within the range');
-  });
-
-  it('should be possible to build a regex that matches a number between a number range inclusive', () => {
-    const start = 10;
-    const end = 20;
-    const builder = new RegexBuilder();
-    const regex = builder
-      .matchNumberBetweenInclusive(10, 20)
-      .toRegExp();
-    const numbers = [];
-    for (let i = start + 1; i < end; i += 1) {
-      numbers.push(`${i}`);
-    }
-    assert.strictEqual(builder.toRegexString(), '(10|11|12|13|14|15|16|17|18|19|20)');
-    assert(numbers.every(number => number.match(regex)), 'should have matched all numbers within the range');
-  });
 });

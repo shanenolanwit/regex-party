@@ -73,38 +73,6 @@ module.exports = class RegexBuilder {
   }
 
   /**
-   * Adds a pattern to match any number between the given number range.
-   * The start and end numbers are excluded from the pattern e.g.
-   * a start of 10 and an end of 15 would result in a pattern like
-   * (11|12|13|14)
-   *
-   * @param {number} start the starting number
-   * @param {number} end the end number
-   */
-  matchNumberBetween(start, end) {
-    const numberRange = [];
-    for (let i = start + 1; i < end; i += 1) {
-      numberRange.push(`${i}`);
-    }
-    this.canMatch(numberRange);
-    return this;
-  }
-
-  /**
-   * Adds a pattern to match any number between the given number range.
-   * The start and end numbers are included int the pattern e.g.
-   * a start of 10 and an end of 15 would result in a pattern like
-   * (10|11|12|13|14|15)
-   *
-   * @param {number} start the starting number
-   * @param {number} end the end number
-   */
-  matchNumberBetweenInclusive(start, end) {
-    this.matchNumberBetween(start - 1, end + 1);
-    return this;
-  }
-
-  /**
    * Adds an or condition to the regex
    *
    * @param {string} pattern the pattern to add as an or condition to the regex
