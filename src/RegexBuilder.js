@@ -52,6 +52,14 @@ module.exports = class RegexBuilder {
   }
 
   /**
+   * Matches any alphanumeric characters one or more times
+   */
+  word() {
+    this.regexStr += '\\w+';
+    return this;
+  }
+
+  /**
    * Adds the given pattern to the regex
    *
    * @param {string} pattern the pattern to match
@@ -62,13 +70,39 @@ module.exports = class RegexBuilder {
   }
 
   /**
+   * Makes sure the previous pattern is not followed by the given pattern
+   *
+   * @param {string} pattern the pattern to match
+   */
+  notFollowedBy(pattern) {
+    this.regexStr += `(?!${pattern})`;
+    return this;
+  }
+
+  /**
    * Adds an array of patterns as an or condition to the regex
    *
    * @param {Array[string]} patterns an array of strings that should be joined as an or condition
    * @returns RegexBuilder - this instance
    */
   canMatch(patterns) {
-    this.regexStr += `(${patterns.join('|')})`;
+    this.regexStr += `(?:${patterns.join('|')})`;
+    return this;
+  }
+
+  /**
+   * Matches any character at least once except for the given characters
+   *
+   * @param {(string|string[])} value the value characters to not match
+   */
+  anythingBut(value) {
+    let pattern;
+    if (Array.isArray(value)) {
+      pattern = `${value.join('')}`;
+    } else {
+      pattern = value;
+    }
+    this.regexStr += `[^${pattern}]`;
     return this;
   }
 
@@ -133,7 +167,7 @@ module.exports = class RegexBuilder {
    */
   optional(pattern) {
     if (pattern.length > 1) {
-      this.regexStr += `(${pattern})?`;
+      this.regexStr += `(?:${pattern})?`;
     } else {
       this.regexStr += `${pattern}?`;
     }
@@ -151,7 +185,7 @@ module.exports = class RegexBuilder {
   }
 
   /**
-   * Matches any character
+   * Matches any character once
    *
    * @returns RegexBuilder - this instance
    */

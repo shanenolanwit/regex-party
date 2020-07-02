@@ -58,7 +58,7 @@ describe.only('Unit: RegexBuilder', () => {
       .anything()
       .zeroOrMoreTimes()
       .toRegExp();
-    assert.strictEqual(builder.toRegexString(), '(http|https).*');
+    assert.strictEqual(builder.toRegexString(), '(?:http|https).*');
     assert('http://'.match(regex), 'should have matched');
     assert('https://'.match(regex), 'should have matched');
   });
@@ -102,7 +102,7 @@ describe.only('Unit: RegexBuilder', () => {
       .optional('hello')
       .then('world')
       .toRegExp();
-    assert.strictEqual(builder.toRegexString(), '(hello)?world');
+    assert.strictEqual(builder.toRegexString(), '(?:hello)?world');
     assert('hello world'.match(regex), 'should have matched');
     assert('world'.match(regex), 'should have matched');
   });
@@ -161,5 +161,43 @@ describe.only('Unit: RegexBuilder', () => {
     assert.strictEqual(builder.toRegexString(), '1?woRLd');
     assert('1world'.match(regex), 'should have matched');
     assert('WOrld'.match(regex), 'should have matched');
+  });
+
+  it('should be possible to build a regex that matches anything but the given values', () => {
+    const builder = new RegexBuilder();
+    const regex = builder.anythingBut('abc')
+      .toRegExp();
+    assert.strictEqual(builder.toRegexString(), '[^abc]');
+    assert(!'abc'.match(regex), 'should not have matched');
+    assert('def'.match(regex), 'should have matched');
+  });
+
+  it('should be possible to build a regex that matches anything but the given values as an array', () => {
+    const builder = new RegexBuilder();
+    const regex = builder.anythingBut(['a', 'b', 'c'])
+      .toRegExp();
+    assert.strictEqual(builder.toRegexString(), '[^abc]');
+    assert(!'abc'.match(regex), 'should not have matched');
+    assert('def'.match(regex), 'should have matched');
+  });
+
+  it('should be possible to build a regex that matches a pattern not followed by another pattern', () => {
+    const builder = new RegexBuilder();
+    const regex = builder.startsWith('abc').notFollowedBy('def')
+      .toRegExp();
+    assert.strictEqual(builder.toRegexString(), '^abc(?!def)');
+    assert(!'abcdef'.match(regex), 'should not have matched');
+    assert('abc'.match(regex), 'should have matched');
+    assert('abc-some-other-pattern'.match(regex), 'should have matched');
+  });
+
+  it('should be possible to build a regex that matches a word', () => {
+    const builder = new RegexBuilder();
+    const regex = builder.word()
+      .toRegExp();
+    assert.strictEqual(builder.toRegexString(), '\\w+');
+    assert(!'*'.match(regex), 'should not have matched');
+    assert('hello'.match(regex), 'should not have matched');
+    assert('abc-some-other-pattern'.match(regex), 'should have matched');
   });
 });
