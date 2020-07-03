@@ -2,7 +2,7 @@ const assert = require('assert');
 
 const RegexBuilder = require('../src/RegexBuilder');
 
-describe.only('Unit: RegexBuilder', () => {
+describe('Unit: RegexBuilder', () => {
   it('should be possible to build a regex with a then', () => {
     const builder = new RegexBuilder();
     const regex = builder.then('hello world').toRegExp();
