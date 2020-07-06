@@ -3,7 +3,7 @@ module.exports = class RegexBuilder {
   constructor({ flags = [] } = {}) {
     this.regexStr = '';
     this.flags = flags;
-    this.json = { expressions: [] };
+    this.patternTracker = { expressions: [] };
   }
 
   /**
@@ -14,10 +14,10 @@ module.exports = class RegexBuilder {
   caseSensitive(caseSensitive) {
     if (!caseSensitive && !this.flags.includes('i')) {
       this.flags.push('i');
-      this.json.caseSensitive = 'true';
+      this.patternTracker.caseSensitive = 'true';
     } else {
       this.flags = this.flags.filter(f => f !== 'i');
-      this.json.caseSensitive = 'false';
+      this.patternTracker.caseSensitive = 'false';
     }
     return this;
   }
@@ -30,7 +30,7 @@ module.exports = class RegexBuilder {
    */
   startsWith(pattern) {
     this.regexStr = `^${pattern}${this.regexStr}`;
-    this.json.startsWith = pattern;
+    this.patternTracker.startsWith = pattern;
     return this;
   }
 
@@ -42,7 +42,7 @@ module.exports = class RegexBuilder {
    */
   endsWith(pattern) {
     this.regexStr = `${this.regexStr}${pattern}$`;
-    this.json.endsWith = pattern;
+    this.patternTracker.endsWith = pattern;
     return this;
   }
 
@@ -54,7 +54,7 @@ module.exports = class RegexBuilder {
    */
   then(pattern) {
     this.regexStr += `${pattern}`;
-    this.json.expressions.push({ pattern });
+    this.patternTracker.expressions.push({ pattern });
     return this;
   }
 
@@ -82,24 +82,24 @@ module.exports = class RegexBuilder {
    * Matches any alphanumeric characters one or more times
    */
   word() {
-    this.regexStr += '\\w+';
-    return this;
+    const pattern = '\\w+';
+    return this.then(pattern);
   }
 
   /**
    * Matches an upper case letter
    */
   uppercaseLetter() {
-    this.regexStr += '[A-Z]';
-    return this;
+    const pattern = '[A-Z]';
+    return this.then(pattern);
   }
 
   /**
    * Matches lower case letter
    */
   lowercaseLetter() {
-    this.regexStr += '[a-z]';
-    return this;
+    const pattern = '[a-z]';
+    return this.then(pattern);
   }
 
   /**
@@ -115,9 +115,8 @@ module.exports = class RegexBuilder {
       throw new Error('Start of character range'
       + ' is greater than the end character, make sure both characters are the same casing.');
     }
-    this.regexStr += `[${fromChar}-${toChar}]`;
-    this.json.expressions.push({ pattern: `[${fromChar}-${toChar}]` });
-    return this;
+    const pattern = `[${fromChar}-${toChar}]`;
+    return this.then(pattern);
   }
 
   /**
@@ -126,8 +125,7 @@ module.exports = class RegexBuilder {
    * @param {string} pattern the pattern to match
    */
   mustBeFollowedBy(pattern) {
-    this.regexStr += `(?=${pattern})`;
-    return this;
+    return this.then(`(?=${pattern})`);
   }
 
   /**
@@ -136,8 +134,7 @@ module.exports = class RegexBuilder {
    * @param {string} pattern the pattern to match
    */
   mustNotBeFollowedBy(pattern) {
-    this.regexStr += `(?!${pattern})`;
-    return this;
+    return this.then(`(?!${pattern})`);
   }
 
   /**
@@ -147,8 +144,7 @@ module.exports = class RegexBuilder {
    * @returns RegexBuilder - this instance
    */
   canMatch(patterns) {
-    this.regexStr += `(?:${patterns.join('|')})`;
-    return this;
+    return this.then(`(?:${patterns.join('|')})`);
   }
 
   /**
@@ -167,8 +163,7 @@ module.exports = class RegexBuilder {
    * @param {string[]} values an array of characters to not match
    */
   anythingBut(values) {
-    this.regexStr += `[^${values.join('')}]`;
-    return this;
+    return this.then(`[^${values.join('')}]`);
   }
 
   /**
@@ -178,8 +173,7 @@ module.exports = class RegexBuilder {
    * @returns RegexBuilder - this instance
    */
   or(pattern) {
-    this.regexStr += `|${pattern}`;
-    return this;
+    return this.then(`|${pattern}`);
   }
 
   /**
@@ -189,48 +183,48 @@ module.exports = class RegexBuilder {
    * @returns RegexBuilder - this instance
    */
   number() {
-    this.regexStr += '\\d';
-    return this;
+    const pattern = '\\d';
+    return this.then(pattern);
   }
 
   /**
    * Matches a number or or more times
    */
   numbers() {
-    this.regexStr += '\\d+';
-    return this;
+    const pattern = '\\d+';
+    return this.then(pattern);
   }
 
   /**
    * Matches a single space
    */
   space() {
-    this.regexStr += ' ';
-    return this;
+    const pattern = ' ';
+    return this.then(pattern);
   }
 
   /**
    * Matches a single whitespace
    */
   whitespace() {
-    this.regexStr += '\\s';
-    return this;
+    const pattern = '\\s';
+    return this.then(pattern);
   }
 
   /**
    * Matches a single tab
    */
   tab() {
-    this.regexStr += '\\t';
-    return this;
+    const pattern = '\\t';
+    return this.then(pattern);
   }
 
   /**
    * Matches a new line or line break
    */
   newLine() {
-    this.regexStr += '(?:\\r\\n|\\r|\\n)';
-    return this;
+    const pattern = '(?:\\r\\n|\\r|\\n)';
+    return this.then(pattern);
   }
 
   /**
@@ -240,8 +234,8 @@ module.exports = class RegexBuilder {
    * @returns RegexBuilder - this instance
    */
   exactlyNTimes(nTimes) {
-    this.regexStr += `{${nTimes}}`;
-    return this;
+    const pattern = `{${nTimes}}`;
+    return this.then(pattern);
   }
 
   /**
@@ -251,8 +245,7 @@ module.exports = class RegexBuilder {
    * @param {number} numberOfRepeats the number of times to repeat the pattern
    */
   repeat(pattern, numberOfRepeats) {
-    this.regexStr += `(?:${pattern}){${numberOfRepeats}}`;
-    return this;
+    return this.then(`(?:${pattern}){${numberOfRepeats}}`);
   }
 
   /**
@@ -261,8 +254,8 @@ module.exports = class RegexBuilder {
    * @returns RegexBuilder - this instance
    */
   oneOrMoreTimes() {
-    this.regexStr += '+';
-    return this;
+    const pattern = '+';
+    return this.then(pattern);
   }
 
   /**
@@ -271,8 +264,8 @@ module.exports = class RegexBuilder {
    * @returns RegexBuilder - this instance
    */
   zeroOrMoreTimes() {
-    this.regexStr += '*';
-    return this;
+    const pattern = '*';
+    return this.then(pattern);
   }
 
   /**
@@ -282,9 +275,7 @@ module.exports = class RegexBuilder {
    * @returns RegexBuilder - this instance
    */
   optional(pattern) {
-    this.regexStr += `(?:${pattern})?`;
-    this.json.expressions.push({ pattern: `(?:${pattern})?` });
-    return this;
+    return this.then(`(?:${pattern})?`);
   }
 
   /**
@@ -303,8 +294,8 @@ module.exports = class RegexBuilder {
    * @returns RegexBuilder - this instance
    */
   anything() {
-    this.regexStr += '.';
-    return this;
+    const pattern = '.';
+    return this.then(pattern);
   }
 
   /**
@@ -314,8 +305,7 @@ module.exports = class RegexBuilder {
    * @returns RegexBuilder - this instance
    */
   group(pattern) {
-    this.regexStr += `(${pattern})`;
-    return this;
+    return this.then(`(${pattern})`);
   }
 
   /**
@@ -338,7 +328,7 @@ module.exports = class RegexBuilder {
   }
 
   toJson() {
-    return JSON.stringify(this.json, null, 2);
+    return JSON.stringify(this.patternTracker, null, 2);
   }
 
   static fromJson(json) {

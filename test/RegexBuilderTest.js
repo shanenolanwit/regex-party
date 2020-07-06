@@ -312,17 +312,39 @@ describe('Unit: RegexBuilder', () => {
     });
   });
 
-  it.only('should', () => {
+  it('should be able to transform to and from json', () => {
     const builder = new RegexBuilder();
     const r = builder.then('mployee').then('[0-9]+').optional('X').characterRange('a', 'f')
       .startsWith('E')
       .endsWith('[0-9]')
       .caseSensitive(true);
-    console.log(r.toJson());
-    const regex = RegexBuilder.fromJson(r.toJson()).toRegexString();
-    assert('Employee4a3'.match(regex), 'should have matched');
-    assert('Employee2Xf1'.match(regex), 'should have matched');
-    assert(!'employee4a3'.match(regex), 'should not have matched');
-    assert(!'Employee4k3'.match(regex), 'should not have matched');
+    const expectedJsonObject = {
+      expressions: [
+        {
+          pattern: 'mployee'
+        },
+        {
+          pattern: '[0-9]+'
+        },
+        {
+          pattern: '(?:X)?'
+        },
+        {
+          pattern: '[a-f]'
+        }
+      ],
+      startsWith: 'E',
+      endsWith: '[0-9]',
+      caseSensitive: 'false'
+    };
+    const expectedRegexString = '^Employee[0-9]+(?:X)?[a-f][0-9]$';
+    const regexObject = RegexBuilder.fromJson(r.toJson());
+    const regexString = regexObject.toRegexString();
+    assert.deepEqual(regexObject.patternTracker, expectedJsonObject, 'should have matched');
+    assert.equal(regexString, expectedRegexString, 'should have matched');
+    assert('Employee4a3'.match(regexString), 'should have matched');
+    assert('Employee2Xf1'.match(regexString), 'should have matched');
+    assert(!'employee4a3'.match(regexString), 'should not have matched');
+    assert(!'Employee4k3'.match(regexString), 'should not have matched');
   });
 });

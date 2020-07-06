@@ -1,7 +1,7 @@
 const assert = require('assert');
 const NumberRegex = require('../src/NumberRegex');
 
-describe.only('Unit: NumberRegex', () => {
+describe('Unit: NumberRegex', () => {
   it('should match a positive number', () => {
     const number = '10';
     const regex = new RegExp(NumberRegex.positiveNumber());
