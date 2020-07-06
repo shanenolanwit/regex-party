@@ -1,7 +1,7 @@
 const assert = require('assert');
 const NumberRegex = require('../src/NumberRegex');
 
-describe.only('Unit: NumberRegex', () => {
+describe('Unit: NumberRegex', () => {
   it('should match a positive number', () => {
     const number = '10';
     const regex = new RegExp(NumberRegex.positiveNumber());
@@ -54,5 +54,29 @@ describe.only('Unit: NumberRegex', () => {
     const number = '10.04567';
     const regex = new RegExp(NumberRegex.decimalNumberWithExactPlaces(4));
     assert(!number.match(regex), 'should not have matched');
+  });
+
+  it('should match a percentage', () => {
+    const maxItems = 200;
+    const regex = new RegExp(NumberRegex.percentage());
+    Array.from({ length: maxItems }, () => Math.floor(Math.random() * maxItems))
+      .forEach((number) => {
+        const numberStr = `${number}%`;
+        assert(numberStr.match(regex), 'should have matched');
+      });
+  });
+
+  it('should match a percentage', () => {
+    const maxItems = 200;
+    const regex = new RegExp(NumberRegex.percentage());
+    Array.from({ length: maxItems }, () => Math.floor(Math.random() * maxItems))
+      .forEach((number) => {
+        const numberStr = `${number}%`;
+        const negativeNumberStr = `-${numberStr}`;
+        const positiveNumberStr = `+${numberStr}`;
+        assert(numberStr.match(regex), 'should have matched');
+        assert(negativeNumberStr.match(regex), 'should have matched');
+        assert(positiveNumberStr.match(regex), 'should have matched');
+      });
   });
 });

@@ -43,4 +43,11 @@ module.exports = class NumberRegex {
      */
     return `\\b\\d+\\.\\d{${decimalPlaces}}\\b`;
   }
+
+  /**
+   * Matches a signed integer or decimal followed by a percentage sign
+   */
+  static percentage() {
+    return '(?:-|\\+)?\\d*\\.?\\d+?%';
+  }
 };
