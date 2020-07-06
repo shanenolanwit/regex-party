@@ -1,3 +1,4 @@
+
 module.exports = class RegexBuilder {
   constructor({ flags = [] } = {}) {
     this.regexStr = '';
@@ -52,14 +53,6 @@ module.exports = class RegexBuilder {
   }
 
   /**
-   * Matches any alphanumeric characters one or more times
-   */
-  word() {
-    this.regexStr += '\\w+';
-    return this;
-  }
-
-  /**
    * Adds the given pattern to the regex
    *
    * @param {string} pattern the pattern to match
@@ -70,11 +63,72 @@ module.exports = class RegexBuilder {
   }
 
   /**
+   * Adds the given pattern to the regex
+   *
+   * @param {string} pattern the pattern to match
+   * @returns RegexBuilder - this instance
+   */
+  match(pattern) {
+    return this.then(pattern);
+  }
+
+  /**
+   * Matches any alphanumeric characters one or more times
+   */
+  word() {
+    this.regexStr += '\\w+';
+    return this;
+  }
+
+  /**
+   * Matches an upper case letter
+   */
+  uppercaseLetter() {
+    this.regexStr += '[A-Z]';
+    return this;
+  }
+
+  /**
+   * Matches lower case letter
+   */
+  lowercaseLetter() {
+    this.regexStr += '[a-z]';
+    return this;
+  }
+
+  /**
+   * Creates a character range from the given characters
+   *
+   * @param {string} fromChar a single character to start from
+   * @param {string} toChar a single character to match up to
+   * @throws {Error} throws an error if the starting character is greater than the ending character
+   * or if the characters casings are different.
+   */
+  characterRange(fromChar, toChar) {
+    if (fromChar > toChar) {
+      throw new Error('Start of character range'
+      + ' is greater than the end character, make sure both characters are the same casing.');
+    }
+    this.regexStr += `[${fromChar}-${toChar}]`;
+    return this;
+  }
+
+  /**
+   * Makes sure the previous pattern is followed by the given pattern
+   *
+   * @param {string} pattern the pattern to match
+   */
+  mustBeFollowedBy(pattern) {
+    this.regexStr += `(?=${pattern})`;
+    return this;
+  }
+
+  /**
    * Makes sure the previous pattern is not followed by the given pattern
    *
    * @param {string} pattern the pattern to match
    */
-  notFollowedBy(pattern) {
+  mustNotBeFollowedBy(pattern) {
     this.regexStr += `(?!${pattern})`;
     return this;
   }
@@ -91,18 +145,22 @@ module.exports = class RegexBuilder {
   }
 
   /**
+   * Adds an array of patterns as an or condition to the regex
+   *
+   * @param {Array[string]} patterns an array of strings that should be joined as an or condition
+   * @returns RegexBuilder - this instance
+   */
+  eitherOf(patterns) {
+    return this.canMatch(patterns);
+  }
+
+  /**
    * Matches any character at least once except for the given characters
    *
-   * @param {(string|string[])} value the value characters to not match
+   * @param {string[]} values an array of characters to not match
    */
-  anythingBut(value) {
-    let pattern;
-    if (Array.isArray(value)) {
-      pattern = `${value.join('')}`;
-    } else {
-      pattern = value;
-    }
-    this.regexStr += `[^${pattern}]`;
+  anythingBut(values) {
+    this.regexStr += `[^${values.join('')}]`;
     return this;
   }
 
@@ -118,13 +176,53 @@ module.exports = class RegexBuilder {
   }
 
   /**
-   * Matches a number
+   * Matches a number once
    *
    * @param {number} number the number to match
    * @returns RegexBuilder - this instance
    */
-  number(number) {
-    this.regexStr += `${number}`;
+  number() {
+    this.regexStr += '\\d';
+    return this;
+  }
+
+  /**
+   * Matches a number or or more times
+   */
+  numbers() {
+    this.regexStr += '\\d+';
+    return this;
+  }
+
+  /**
+   * Matches a single space
+   */
+  space() {
+    this.regexStr += ' ';
+    return this;
+  }
+
+  /**
+   * Matches a single whitespace
+   */
+  whitespace() {
+    this.regexStr += '\\s';
+    return this;
+  }
+
+  /**
+   * Matches a single tab
+   */
+  tab() {
+    this.regexStr += '\\t';
+    return this;
+  }
+
+  /**
+   * Matches a new line or line break
+   */
+  newLine() {
+    this.regexStr += '(?:\\r\\n|\\r|\\n)';
     return this;
   }
 
@@ -136,6 +234,17 @@ module.exports = class RegexBuilder {
    */
   exactlyNTimes(nTimes) {
     this.regexStr += `{${nTimes}}`;
+    return this;
+  }
+
+  /**
+   * Adds a pattern to the regex which should be repeated a given number of times
+   *
+   * @param {string} pattern the pattern to repeat
+   * @param {number} numberOfRepeats the number of times to repeat the pattern
+   */
+  repeat(pattern, numberOfRepeats) {
+    this.regexStr += `(?:${pattern}){${numberOfRepeats}}`;
     return this;
   }
 
@@ -166,11 +275,7 @@ module.exports = class RegexBuilder {
    * @returns RegexBuilder - this instance
    */
   optional(pattern) {
-    if (pattern.length > 1) {
-      this.regexStr += `(?:${pattern})?`;
-    } else {
-      this.regexStr += `${pattern}?`;
-    }
+    this.regexStr += `(?:${pattern})?`;
     return this;
   }
 
