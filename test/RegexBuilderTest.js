@@ -311,4 +311,18 @@ describe('Unit: RegexBuilder', () => {
       + ' is greater than the end character, make sure both characters are the same casing.'
     });
   });
+
+  it.only('should', () => {
+    const builder = new RegexBuilder();
+    const r = builder.then('mployee').then('[0-9]+').optional('X').characterRange('a', 'f')
+      .startsWith('E')
+      .endsWith('[0-9]')
+      .caseSensitive(true);
+    console.log(r.toJson());
+    const regex = RegexBuilder.fromJson(r.toJson()).toRegexString();
+    assert('Employee4a3'.match(regex), 'should have matched');
+    assert('Employee2Xf1'.match(regex), 'should have matched');
+    assert(!'employee4a3'.match(regex), 'should not have matched');
+    assert(!'Employee4k3'.match(regex), 'should not have matched');
+  });
 });

@@ -3,6 +3,7 @@ module.exports = class RegexBuilder {
   constructor({ flags = [] } = {}) {
     this.regexStr = '';
     this.flags = flags;
+    this.json = { expressions: [] };
   }
 
   /**
@@ -13,8 +14,10 @@ module.exports = class RegexBuilder {
   caseSensitive(caseSensitive) {
     if (!caseSensitive && !this.flags.includes('i')) {
       this.flags.push('i');
+      this.json.caseSensitive = 'true';
     } else {
       this.flags = this.flags.filter(f => f !== 'i');
+      this.json.caseSensitive = 'false';
     }
     return this;
   }
@@ -27,6 +30,7 @@ module.exports = class RegexBuilder {
    */
   startsWith(pattern) {
     this.regexStr = `^${pattern}${this.regexStr}`;
+    this.json.startsWith = pattern;
     return this;
   }
 
@@ -38,6 +42,7 @@ module.exports = class RegexBuilder {
    */
   endsWith(pattern) {
     this.regexStr = `${this.regexStr}${pattern}$`;
+    this.json.endsWith = pattern;
     return this;
   }
 
@@ -49,6 +54,7 @@ module.exports = class RegexBuilder {
    */
   then(pattern) {
     this.regexStr += `${pattern}`;
+    this.json.expressions.push({ pattern });
     return this;
   }
 
@@ -110,6 +116,7 @@ module.exports = class RegexBuilder {
       + ' is greater than the end character, make sure both characters are the same casing.');
     }
     this.regexStr += `[${fromChar}-${toChar}]`;
+    this.json.expressions.push({ pattern: `[${fromChar}-${toChar}]` });
     return this;
   }
 
@@ -276,6 +283,7 @@ module.exports = class RegexBuilder {
    */
   optional(pattern) {
     this.regexStr += `(?:${pattern})?`;
+    this.json.expressions.push({ pattern: `(?:${pattern})?` });
     return this;
   }
 
@@ -327,5 +335,29 @@ module.exports = class RegexBuilder {
    */
   toRegexString() {
     return this.regexStr;
+  }
+
+  toJson() {
+    return JSON.stringify(this.json, null, 2);
+  }
+
+  static fromJson(json) {
+    const obj = JSON.parse(json);
+    let r = new RegexBuilder();
+    if (obj.startsWith) {
+      r = r.startsWith(obj.startsWith);
+    }
+    if (obj.caseSensitive) {
+      r = r.caseSensitive(true);
+    } else {
+      r = r.caseSensitive(false);
+    }
+    obj.expressions.forEach((element) => {
+      r.then(element.pattern);
+    });
+    if (obj.endsWith) {
+      r = r.endsWith(obj.endsWith);
+    }
+    return r;
   }
 };
