@@ -97,4 +97,17 @@ describe('Unit: NumberRegex', () => {
         assert(positiveNumberStr.match(regex), 'should have matched');
       });
   });
+
+  it('should match numbers represented as scientific notation', () => {
+    const testCases = [
+      '5.56789e+0', '12E21', '12E219',
+      '236E-19', '66.2e99', '22.54e23',
+      '1.2', '555', '4.2', '-22.54e23',
+      '+4.5', '3545.6578e240465863', '-7.001e-2'
+    ];
+    testCases.forEach((testCase) => {
+      const regex = new RegExp(NumberRegex.scientificNotation());
+      assert(testCase.match(regex), 'should have matched');
+    });
+  });
 });

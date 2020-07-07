@@ -3,21 +3,21 @@ const SIGNED_REGEX = '(?:-|\\+)?';
 
 module.exports = class NumberRegex {
   /**
-   * Matches a single positive number
+   * regex that matches a single positive number
    */
   static positiveNumber() {
     return '\\d+';
   }
 
   /**
-   * Matches a single negative number
+   * Regex that matches a single negative number
    */
   static negativeNumber() {
     return '-\\d+';
   }
 
   /**
-   * Matches a signed number which can optionally start with a
+   * Regex that matches a signed number which can optionally start with a
    * '-' or a '+'
    */
   static signedNumber() {
@@ -25,21 +25,21 @@ module.exports = class NumberRegex {
   }
 
   /**
-   * Matches a positive decimal number
+   * Regex that matches a positive decimal number
    */
   static positiveDecimal() {
     return '\\d+\\.\\d+';
   }
 
   /**
-   * Matches a negative decimal number
+   * Regex matches a negative decimal number
    */
   static negativeDecimal() {
     return '-\\d+\\.\\d+';
   }
 
   /**
-   * Matches a signed decimal number which can optionally start with a
+   * Regex that atches a signed decimal number which can optionally start with a
    * '-' or a '+'
    */
   static signedDecimalNumber() {
@@ -47,7 +47,7 @@ module.exports = class NumberRegex {
   }
 
   /**
-   * Matches a decimal number with an exact number of decimal places after the decimal point
+   * Regex that matches a decimal number with an exact number of decimal places after the decimal point
    *
    * @param {number} decimalPlaces the number of decimal places to match
    */
@@ -63,9 +63,17 @@ module.exports = class NumberRegex {
   }
 
   /**
-   * Matches a signed integer or decimal followed by a percentage sign
+   * Regex that matches a signed integer or decimal followed by a percentage sign
    */
   static percentage() {
     return '(?:-|\\+)?\\d*\\.?\\d+?%';
+  }
+
+  /**
+   * Regex to match a number represented in scientific notation. Some examples that
+   * match are [5.56789e+0, 1.2, -7.001e-2, -22.54e23, 555]
+   */
+  static scientificNotation() {
+    return '(?:-|\\+)?\\d+\\.?\\d*(?:(?:e|E)(?:-|\\+)?\\d+)?';
   }
 };
