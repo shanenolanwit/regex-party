@@ -1,3 +1,6 @@
+// regex for optionally matching a sign at the start of a number
+const SIGNED_REGEX = '(?:-|\\+)?';
+
 module.exports = class NumberRegex {
   /**
    * Matches a single positive number
@@ -18,14 +21,29 @@ module.exports = class NumberRegex {
    * '-' or a '+'
    */
   static signedNumber() {
-    return '(?:-|\\+)?\\d+';
+    return `${SIGNED_REGEX}${this.positiveNumber()}`;
   }
 
   /**
-   * Matches a decimal number
+   * Matches a positive decimal number
    */
-  static decimalNumber() {
+  static positiveDecimal() {
     return '\\d+\\.\\d+';
+  }
+
+  /**
+   * Matches a negative decimal number
+   */
+  static negativeDecimal() {
+    return '-\\d+\\.\\d+';
+  }
+
+  /**
+   * Matches a signed decimal number which can optionally start with a
+   * '-' or a '+'
+   */
+  static signedDecimalNumber() {
+    return `${SIGNED_REGEX}${this.positiveDecimal()}`;
   }
 
   /**

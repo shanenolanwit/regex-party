@@ -20,7 +20,7 @@ describe('Unit: NumberRegex', () => {
     assert(number.match(regex), 'should have matched');
   });
 
-  it('should match a signed number with a negative symbol', () => {
+  it('should match a signed number with a minus symbol', () => {
     const number = '-10';
     const regex = new RegExp(NumberRegex.signedNumber());
     assert(number.match(regex), 'should have matched');
@@ -28,13 +28,31 @@ describe('Unit: NumberRegex', () => {
 
   it('should match a decimal number', () => {
     const number = '10.04';
-    const regex = new RegExp(NumberRegex.decimalNumber());
+    const regex = new RegExp(NumberRegex.positiveDecimal());
     assert(number.match(regex), 'should have matched');
   });
 
-  it('should match a decimal number', () => {
+  it('should match a positive decimal number', () => {
     const number = '10.04';
-    const regex = new RegExp(NumberRegex.decimalNumber());
+    const regex = new RegExp(NumberRegex.positiveDecimal());
+    assert(number.match(regex), 'should have matched');
+  });
+
+  it('should match a negative decimal number', () => {
+    const number = '-10.04';
+    const regex = new RegExp(NumberRegex.negativeDecimal());
+    assert(number.match(regex), 'should have matched');
+  });
+
+  it('should match a signed decimal with a plus symbol', () => {
+    const number = '+10.00';
+    const regex = new RegExp(NumberRegex.signedDecimalNumber());
+    assert(number.match(regex), 'should have matched');
+  });
+
+  it('should match a signed decimal with a minus symbol', () => {
+    const number = '-10.00';
+    const regex = new RegExp(NumberRegex.signedDecimalNumber());
     assert(number.match(regex), 'should have matched');
   });
 
