@@ -1,6 +1,3 @@
-// regex for optionally matching a sign at the start of a number
-const SIGNED_REGEX = '(?:-|\\+)?';
-
 module.exports = class NumberRegex {
   /**
    * regex that matches a single positive number
@@ -21,7 +18,7 @@ module.exports = class NumberRegex {
    * '-' or a '+'
    */
   static signedNumber() {
-    return `${SIGNED_REGEX}${this.positiveNumber()}`;
+    return `(?:-|\\+)?${this.positiveNumber()}`;
   }
 
   /**
@@ -39,11 +36,11 @@ module.exports = class NumberRegex {
   }
 
   /**
-   * Regex that atches a signed decimal number which can optionally start with a
+   * Regex that matches a signed decimal number which can optionally start with a
    * '-' or a '+'
    */
   static signedDecimalNumber() {
-    return `${SIGNED_REGEX}${this.positiveDecimal()}`;
+    return `(?:-|\\+)?${this.positiveDecimal()}`;
   }
 
   /**
@@ -59,7 +56,7 @@ module.exports = class NumberRegex {
      * So saying “\b matches before and after an alphanumeric sequence”
      * is more exact than saying “before and after a word”.
      */
-    return `\\b\\d+\\.\\d{${decimalPlaces}}\\b`;
+    return `(?:-|\\+)?\\b\\d+\\.\\d{${decimalPlaces}}\\b`;
   }
 
   /**

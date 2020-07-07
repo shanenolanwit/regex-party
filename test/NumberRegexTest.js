@@ -62,6 +62,18 @@ describe('Unit: NumberRegex', () => {
     assert(number.match(regex), 'should have matched');
   });
 
+  it('should match a decimal number with exact decimal places with a plus symbol', () => {
+    const number = '+10.0456';
+    const regex = new RegExp(NumberRegex.decimalNumberWithExactPlaces(4));
+    assert(number.match(regex), 'should have matched');
+  });
+
+  it('should match a decimal number with exact decimal places with a minus symbol', () => {
+    const number = '-10.0456';
+    const regex = new RegExp(NumberRegex.decimalNumberWithExactPlaces(4));
+    assert(number.match(regex), 'should have matched');
+  });
+
   it('should not match a decimal number to an exact decimal place if the number has too few decimal places', () => {
     const number = '10.045';
     const regex = new RegExp(NumberRegex.decimalNumberWithExactPlaces(4));
